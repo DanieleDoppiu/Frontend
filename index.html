@@ -2,51 +2,45 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sivapp - Scopri Eventi Musicali e Culturali</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-      background-color: #f5f5f5;
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apri Sivapp</title>
+  <script>
+    // Otteniamo i parametri dall'URL
+    function getParameterByName(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
     }
-    h1 {
-      color: #ff5733;
+
+    const eventoId = getParameterByName('eventoId');
+    const user = getParameterByName('user');
+
+    // Funzione di redirect intelligente
+    function redirectToApp() {
+      const deepLink = `sivapp://dettagli/${eventoId}?segui=${user}`;
+      const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.sivapp';
+
+      const isAndroid = /android/i.test(navigator.userAgent);
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+      if (isAndroid || isIOS) {
+        // Prova ad aprire l'app
+        window.location.href = deepLink;
+
+        // Dopo 2 secondi, se non si è aperta, manda al Play Store
+        setTimeout(() => {
+          window.location.href = playStoreUrl;
+        }, 2000);
+      } else {
+        // Da desktop → solo Play Store
+        window.location.href = playStoreUrl;
+      }
     }
-    p {
-      font-size: 1.2rem;
-      margin-top: 10px;
-    }
-    .btn-container {
-      margin-top: 30px;
-    }
-    .btn {
-      background-color: #ff5733;
-      color: white;
-      border: none;
-      padding: 15px 25px;
-      margin: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 5px;
-      text-decoration: none;
-    }
-    .btn:hover {
-      background-color: #e54d28;
-    }
-  </style>
+
+    window.onload = redirectToApp;
+  </script>
 </head>
 <body>
-  <h1>Benvenuto su Sivapp!</h1>
-  <p>Scopri eventi musicali e culturali nella tua città. Scarica Sivapp per partecipare agli eventi più interessanti!</p>
-
-  <div class="btn-container">
-    <!-- Link per Google Play Store -->
-    <a href="https://play.google.com/store/apps/details?id=com.sivapp" class="btn">Scarica per Android</a>
-
-    <!-- Link per Apple App Store (aggiungi il link corretto quando l'app è disponibile) -->
-    <a href="https://apps.apple.com/us/app/sivapp/id1234567890" class="btn">Scarica per iOS</a>
-  </div>
+  <h2>Stiamo aprendo Sivapp...</h2>
+  <p>Se non succede nulla, <a id="fallbackLink" href="https://play.google.com/store/apps/details?id=com.sivapp">clicca qui per scaricare l'app</a>.</p>
 </body>
 </html>
