@@ -1,46 +1,43 @@
 <!DOCTYPE html>
 <html lang="it">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Apri Sivapp</title>
-  <script>
-    // Otteniamo i parametri dall'URL
-    function getParameterByName(name) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(name);
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sivapp - Apri evento</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Aspettiamo che il DOM sia pronto
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventoId = urlParams.get("eventoId");
+        const userId = urlParams.get("user");
 
-    const eventoId = getParameterByName('eventoId');
-    const user = getParameterByName('user');
+        // Se mancano i parametri → reindirizza alla home del sito/app
+        if (!eventoId || !userId) {
+          window.location.href = "https://sivapp.com";
+          return;
+        }
 
-    // Funzione di redirect intelligente
-    function redirectToApp() {
-      const deepLink = `sivapp://dettagli/${eventoId}?segui=${user}`;
-      const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.sivapp';
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isMobile = /android|iphone|ipad|ipod/.test(userAgent);
 
-      const isAndroid = /android/i.test(navigator.userAgent);
-      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        if (isMobile) {
+          // 🔗 Reindirizza all'app (deep link personalizzato)
+          window.location.href = `sivapp://dettagli/${eventoId}?segui=${userId}`;
 
-      if (isAndroid || isIOS) {
-        // Prova ad aprire l'app
-        window.location.href = deepLink;
-
-        // Dopo 2 secondi, se non si è aperta, manda al Play Store
-        setTimeout(() => {
-          window.location.href = playStoreUrl;
-        }, 2000);
-      } else {
-        // Da desktop → solo Play Store
-        window.location.href = playStoreUrl;
-      }
-    }
-
-    window.onload = redirectToApp;
-  </script>
-</head>
-<body>
-  <h2>Stiamo aprendo Sivapp...</h2>
-  <p>Se non succede nulla, <a id="fallbackLink" href="https://play.google.com/store/apps/details?id=com.sivapp">clicca qui per scaricare l'app</a>.</p>
-</body>
+          // ⏳ Se dopo 2.5 secondi l'app non si apre → rimanda al Play Store
+          setTimeout(() => {
+            window.location.href = "https://play.google.com/store/apps/details?id=com.sivapp";
+          }, 2500);
+        } else {
+          // 💻 Da PC → reindirizza al sito
+          window.location.href = "https://sivapp.com";
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <p style="text-align:center;margin-top:50px;font-family:sans-serif;">
+      ⏳ Reindirizzamento in corso verso l'app Sivapp...
+    </p>
+  </body>
 </html>
